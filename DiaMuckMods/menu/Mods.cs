@@ -12,6 +12,9 @@ namespace DiaMuckMods.menu
     {
         public static int MobIdsCool = 0;
         public static int objectId = 9999;
+        private static float jetpackVolocity;
+        private static float jetpackVolocityMax = 100f;
+        private static float jetpackVolocitySpeed = 2.5f;
 
         public static void SizeChanger(string objectName, Vector3 size)
         {
@@ -176,6 +179,7 @@ namespace DiaMuckMods.menu
 
             return x;
         }
+
         public static void Revive()
         {
             PlayerManager playerManager = GameManager.players[LocalClient.instance.myId];
@@ -186,6 +190,35 @@ namespace DiaMuckMods.menu
                 GameManager.instance.gameoverUi.SetActive(false);
                 GameManager.state = GameManager.GameState.Playing;
                 PlayerStatus.Instance.Respawn();
+            }
+        }
+
+        public static void JetPack()
+        {
+            // Set up the Rigid Body
+            GameObject playerObject = GameObject.Find("Player");
+            Transform orientation = playerObject.transform.Find("Orientation");
+            Rigidbody rb = playerObject.GetComponent<Rigidbody>();
+
+            // Calculate fly direction based on input
+            Vector3 flyDirection = Vector3.zero;
+
+            if (Input.GetKey(KeyCode.Space)) // Fly up
+            {
+                flyDirection += orientation.up;
+                if (jetpackVolocity < jetpackVolocityMax)
+                {
+                    jetpackVolocity += jetpackVolocitySpeed;
+                }
+                // Apply velocity to simulate flying movement
+                rb.AddForce(flyDirection * jetpackVolocity);
+            }
+            if (!Input.GetKey(KeyCode.Space))
+            {
+                if (jetpackVolocity > 0)
+                {
+                    jetpackVolocity -= 1f;
+                }
             }
         }
     }
