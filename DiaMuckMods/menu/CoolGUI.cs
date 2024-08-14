@@ -40,11 +40,16 @@ namespace DiaMuckMods.menu
         private bool neverTired = false;
         private bool speedBoost = false;
         private bool spamPlayers = false;
+        private bool jetPack;
+        private bool velocityFly;
         private string chatMessage = "";
 
         // Mod Options
         public float flySpeed = 40f;
         private int lastPlayerId = 0;
+        private Vector3 flyVelocity = Vector3.zero;
+        private float flyVelocityMax = 100f;
+        private float flyVelocitySpeed = 2.5f;
 
         // Define categories
         public enum ModCategory
@@ -161,9 +166,12 @@ namespace DiaMuckMods.menu
 
             // Fly
             fly = GUI.Toggle(new Rect(120, 70, 140, 20), fly, "Fly");
-
+            
+            // Velocity Fly
+            velocityFly = GUI.Toggle(new Rect(120, 90, 140, 20), velocityFly, "Velocity Fly");
+            
             // Noclip
-            noclip = GUI.Toggle(new Rect(120, 90, 140, 20), noclip, "Noclip");
+            noclip = GUI.Toggle(new Rect(120, 110, 140, 20), noclip, "Noclip");
 
             string speedBoostText;
 
@@ -176,7 +184,7 @@ namespace DiaMuckMods.menu
                 speedBoostText = "Speedboost: Off";
             }
 
-            if (GUI.Button(new Rect(120, 115, 140, 20), speedBoostText))
+            if (GUI.Button(new Rect(120, 135, 140, 20), speedBoostText))
             {
                 // Find the player GameObject by tag
                 GameObject playerGameObject = GameObject.Find("Player");
@@ -216,6 +224,8 @@ namespace DiaMuckMods.menu
                     Debug.LogError("Player GameObject not found.");
                 }
             }
+            // Jetpack
+            jetPack = GUI.Toggle(new Rect(120, 160, 140, 20), jetPack, "Jetpack");
         }
 
         void DisplayStatsMods()
@@ -914,7 +924,7 @@ namespace DiaMuckMods.menu
                 catch (NullReferenceException ex)
                 {
                     Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
-                    immortal = false; // Disable immortality if an error occurs
+                    immortal = false;
                 }
             }
 
@@ -1078,7 +1088,156 @@ namespace DiaMuckMods.menu
                     fly = false; // Disable fly if an error occurs
                 }
             }
+            
+            // Velocity Fly
+            if (velocityFly)
+            {
+                try
+                {
+                    // Set up the Rigid Body.
+                    GameObject playerObject = GameObject.Find("Player");
+                    Transform orientation = playerObject.transform.Find("Orientation");
+                    Rigidbody rb = playerObject.GetComponent<Rigidbody>();
 
+                    // Calculate fly direction based on input
+                    Vector3 flyDirection = Vector3.zero;
+
+                    if (Input.GetKey(KeyCode.Space)) // Fly up
+                    {
+                        flyDirection += orientation.up;
+                        if (flyVelocity.y < flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y += 1.25f + flyVelocitySpeed, flyVelocity.z);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.y);
+                    }
+                    else if (Input.GetKey(KeyCode.LeftControl)) // Fly down
+                    {
+                        flyDirection -= orientation.up;
+                        if (flyVelocity.y > -flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y -= -flyVelocitySpeed, flyVelocity.z);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.y);
+                    }
+                    else
+                    {
+                        if (flyVelocity.y < 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y += 1f, flyVelocity.z);
+                        }
+                        if (flyVelocity.y > 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y -= 1f, flyVelocity.z);
+                        }
+                    }
+
+                    if (Input.GetKey(KeyCode.W)) // Move forward
+                    {
+                        flyDirection += orientation.forward;
+                        if (flyVelocity.z > flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y, flyVelocity.z += flyVelocitySpeed);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.z);
+                    }
+                    else if (Input.GetKey(KeyCode.S)) // Move backward
+                    {
+                        flyDirection -= orientation.forward;
+                        if (flyVelocity.z > -flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.y, flyVelocity.z -= -flyVelocitySpeed);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.z);
+                    }
+                    else
+                    {
+                        if (flyVelocity.z < 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.z += 1f, flyVelocity.z);
+                        }
+                        if (flyVelocity.z > 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x, flyVelocity.z -= 1f, flyVelocity.z);
+                        }
+                    }
+
+                    if (Input.GetKey(KeyCode.D)) // Move right
+                    {
+                        flyDirection += orientation.right;
+                        if (flyVelocity.x > flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x += flyVelocitySpeed, flyVelocity.y, flyVelocity.z);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.x);
+                    }
+                    else if (Input.GetKey(KeyCode.A)) // Move left
+                    {
+                        flyDirection -= orientation.right;
+                        if (flyVelocity.x > -flyVelocityMax)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x -= -flyVelocitySpeed, flyVelocity.y, flyVelocity.z);
+                        }
+                        // Apply velocity to simulate flying movement
+                        rb.AddForce(flyDirection * flyVelocity.x);
+                    }
+                    else
+                    {
+                        if (flyVelocity.x < 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x += 1f, flyVelocity.y, flyVelocity.z);
+                        }
+                        if (flyVelocity.x > 0)
+                        {
+                            flyVelocity = new Vector3(flyVelocity.x -= 1f, flyVelocity.y, flyVelocity.z);
+                        }
+                    }
+                    // Faster Fly
+                    /*
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        if (!flySpeedBoost)
+                        {
+                            flySpeedBoost = true;
+                            flySpeed = 60f;
+                            flyVelocityMax = 300f;
+                            flyVelocitySpeed = flyVelocitySpeed * 1.5f;
+                        }
+                        PlayerStatus.Instance.stamina = 100;
+                        PlayerStatus.Instance.hunger = 100;
+                    }
+                    if (!Input.GetKey(KeyCode.LeftShift))
+                    {
+                        if (flySpeedBoost)
+                        {
+                            flySpeedBoost = false;
+                            flySpeed = 40f;
+                            flyVelocitySpeed = flyVelocitySpeed * 0.5f;
+                            flyVelocityMax = 100f;
+                        }
+                    }
+                    */
+                    // Normalize the fly direction
+                    if (flyDirection.magnitude > 1f)
+                    {
+                        flyDirection.Normalize();
+                    }
+
+                    // Apply velocity to simulate flying movement
+                    rb.AddForce(flyDirection * flySpeed);
+                }
+                catch (NullReferenceException ex)
+                {
+                    Debug.LogError("Error accessing Player object: " + ex.Message);
+                    velocityFly = false;
+                }
+            }
+            
             if (moonGravity)
             {
                 try
@@ -1150,7 +1309,7 @@ namespace DiaMuckMods.menu
                 catch (NullReferenceException ex)
                 {
                     Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
-                    neverHungry = false; // Disable immortality if an error occurs
+                    neverHungry = false;
                 }
             }
 
@@ -1163,7 +1322,7 @@ namespace DiaMuckMods.menu
                 catch (NullReferenceException ex)
                 {
                     Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
-                    neverTired = false; // Disable immortality if an error occurs
+                    neverTired = false;
                 }
             }
             if (spamPlayers)
@@ -1181,7 +1340,20 @@ namespace DiaMuckMods.menu
                 catch (Exception ex)
                 {
                     Debug.LogError("Error accessing GameManager instance: " + ex.Message);
-                    spamPlayers = false; // Disable immortality if an error occurs
+                    spamPlayers = false;
+                }
+            }
+
+            if (jetPack)
+            {
+                try
+                {
+                    Mods.JetPack();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("Error accessing Player Object : " + ex.Message);
+                    jetPack = false;
                 }
             }
         }
