@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace DiaMuckMods
+namespace DiaMuckMods.tools
 {
     /// <summary>
     /// This class handles applying harmony patches to the game.

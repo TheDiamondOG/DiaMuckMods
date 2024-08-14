@@ -6,14 +6,14 @@ using UnityEngine.AI;
 using UnityEngine.UIElements;
 using static Mob;
 
-namespace DiaMuckMods
+namespace DiaMuckMods.menu
 {
     internal class Mods : MonoBehaviour
     {
         public static int MobIdsCool = 0;
         public static int objectId = 9999;
 
-        public void SizeChanger(string objectName, Vector3 size)
+        public static void SizeChanger(string objectName, Vector3 size)
         {
             GameObject boatObject = GameObject.Find(objectName);
 
