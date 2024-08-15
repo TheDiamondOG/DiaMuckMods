@@ -14,6 +14,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using DiaMuckMods.tools;
+using Steamworks;
 
 namespace DiaMuckMods
 {
