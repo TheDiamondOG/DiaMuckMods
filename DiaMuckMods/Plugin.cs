@@ -27,6 +27,8 @@ namespace DiaMuckMods
         // Run some on start crap
         private void Awake()
         {
+            menuObject.name = "DiaObject";
+            
             // Make the object immortal
             DontDestroyOnLoad(menuObject);
             
