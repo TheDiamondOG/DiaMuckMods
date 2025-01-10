@@ -63,7 +63,6 @@ namespace DiaMuckMods.menu
             Spawn,
             Teleport,
             Debug,
-            // Add more categories here
         }
 
         public ModCategory currentCategory = ModCategory.Movement;
@@ -151,7 +150,6 @@ namespace DiaMuckMods.menu
                 case ModCategory.Debug:
                     DisplayDebugMods();
                     break;
-                    // Add cases for other categories here
             }
         }
 
