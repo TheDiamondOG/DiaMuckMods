@@ -14,6 +14,7 @@ This is a muck mod menu with random tools to do what ever you want.
 - Fly
 - Noclip
 - Speedboost
+- Jump Boost
 ## Stats
 - Immortality
 - Never Hungry
