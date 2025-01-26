@@ -978,36 +978,33 @@ namespace DiaMuckMods.menu
 
             if (speedBoost)
             {
-                if (!finishedSpeedboost)
+                // Find the player GameObject by tag
+                GameObject playerGameObject = GameObject.Find("Player");
+
+                if (playerGameObject != null)
                 {
-                    // Find the player GameObject by tag
-                    GameObject playerGameObject = GameObject.Find("Player");
+                    // Get the PlayerMovement component from the player GameObject
+                    PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
 
-                    if (playerGameObject != null)
+                    if (playerMovement != null)
                     {
-                        // Get the PlayerMovement component from the player GameObject
-                        PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+                        Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(50f);
+                        Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(35f);
 
-                        if (playerMovement != null)
-                        {
-                            Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(50f);
-                            Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(35f);
-
-                            finishedSpeedboost = true;
-                        }
-                        else
-                        {
-                            Debug.LogError("PlayerMovement component not found on the Player GameObject.");
-
-                            speedBoost = false;
-                        }
+                        finishedSpeedboost = true;
                     }
                     else
                     {
-                        Debug.LogError("Player GameObject not found.");
+                        Debug.LogError("PlayerMovement component not found on the Player GameObject.");
 
                         speedBoost = false;
                     }
+                }
+                else
+                {
+                    Debug.LogError("Player GameObject not found.");
+
+                    speedBoost = false;
                 }
             }
             else
