@@ -49,6 +49,8 @@ This is a muck mod menu with random tools to do what ever you want.
 - Broken Start
 - Close Lobby
 - Leave Lobby
+- Destroy All Respawns
+- Destroy Multipliers
 ## Player
 - Revive (Singleplayer Only, you cant win if you use this)
 - Big Stacks
