@@ -42,8 +42,10 @@ namespace DiaMuckMods.menu
         private bool spamPlayers = false;
         private bool jetPack;
         private bool velocityFly;
+        private bool jumpBoost;
         private bool finishedImmortatilty;
         private bool finishedSpeedboost;
+        private bool finishedJumpBoost;
         private string chatMessage = "";
 
         // Mod Options
@@ -177,9 +179,12 @@ namespace DiaMuckMods.menu
             // Noclip
             noclip = GUI.Toggle(new Rect(120, 110, 140, 20), noclip, "Noclip");
 
-            speedBoost = GUI.Toggle(new Rect(120, 130, 140, 20), noclip, "SpeedBoost");
+            speedBoost = GUI.Toggle(new Rect(120, 130, 140, 20), speedBoost, "Speedboost");
+
             // Jetpack
             jetPack = GUI.Toggle(new Rect(120, 150, 140, 20), jetPack, "Jetpack");
+
+            jumpBoost = GUI.Toggle(new Rect(120, 170, 140, 20), jumpBoost, "Jump Boost");
         }
 
         void DisplayStatsMods()
@@ -1035,6 +1040,66 @@ namespace DiaMuckMods.menu
                     }
 
                     finishedSpeedboost = false;
+                }
+            }
+
+            if (jumpBoost)
+            {
+                // Find the player GameObject by tag
+                GameObject playerGameObject = GameObject.Find("Player");
+
+                if (playerGameObject != null)
+                {
+                    // Get the PlayerMovement component from the player GameObject
+                    PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                    if (playerMovement != null)
+                    {
+                        Traverse.Create(playerMovement).Field("jumpForce").SetValue(30f);
+
+                        finishedJumpBoost = true;
+                    }
+                    else
+                    {
+                        Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+
+                        jumpBoost = false;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Player GameObject not found.");
+
+                    jumpBoost = false;
+                }
+            }
+            else
+            {
+                if (finishedJumpBoost)
+                {
+                    // Find the player GameObject by tag
+                    GameObject playerGameObject = GameObject.Find("Player");
+
+                    if (playerGameObject != null)
+                    {
+                        // Get the PlayerMovement component from the player GameObject
+                        PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                        if (playerMovement != null)
+                        {
+                            Traverse.Create(playerMovement).Field("jumpForce").SetValue(12f);
+                        }
+                        else
+                        {
+                            Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Player GameObject not found.");
+                    }
+
+                    finishedJumpBoost = false;
                 }
             }
 
