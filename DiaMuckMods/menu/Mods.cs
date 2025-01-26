@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using HarmonyLib;
@@ -185,7 +185,7 @@ namespace DiaMuckMods.menu
         public static void Revive()
         {
             PlayerManager playerManager = GameManager.players[LocalClient.instance.myId];
-            if (playerManager.dead && GameManager.state == GameManager.GameState.GameOver)
+            if (playerManager.dead)
             {
                 ClientSend.RevivePlayer(playerManager.id);
                 ServerSend.RevivePlayer(playerManager.id, playerManager.id, true, 0);
