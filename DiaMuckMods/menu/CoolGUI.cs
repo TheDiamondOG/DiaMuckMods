@@ -19,7 +19,7 @@ namespace DiaMuckMods.menu
     public class CoolGUI:MonoBehaviour
     {
         // GUI Crap
-        private Rect windowRect = new Rect(20, 20, 500, 400); // Initial position and size of the window
+        private Rect windowRect = new Rect(20, 20, 600, 500); // Initial position and size of the window
         private bool isDragging = false;
         private Vector2 dragStartPos;
         //public ItemManager itemManager;
@@ -43,6 +43,7 @@ namespace DiaMuckMods.menu
         private bool jetPack;
         private bool velocityFly;
         private bool finishedImmortatilty;
+        private bool finishedSpeedboost;
         private string chatMessage = "";
 
         // Mod Options
@@ -63,6 +64,7 @@ namespace DiaMuckMods.menu
             Player,
             Spawn,
             Teleport,
+            Info,
             Debug,
         }
 
@@ -148,6 +150,9 @@ namespace DiaMuckMods.menu
                 case ModCategory.Teleport:
                     DisplayTeleportMods();
                     break;
+                case ModCategory.Info:
+                    DisplayInfoMenu();
+                    break;
                 case ModCategory.Debug:
                     DisplayDebugMods();
                     break;
@@ -172,59 +177,9 @@ namespace DiaMuckMods.menu
             // Noclip
             noclip = GUI.Toggle(new Rect(120, 110, 140, 20), noclip, "Noclip");
 
-            string speedBoostText;
-
-            if (speedBoost)
-            {
-                speedBoostText = "Speedboost: On";
-            }
-            else
-            {
-                speedBoostText = "Speedboost: Off";
-            }
-
-            if (GUI.Button(new Rect(120, 135, 140, 20), speedBoostText))
-            {
-                // Find the player GameObject by tag
-                GameObject playerGameObject = GameObject.Find("Player");
-
-                if (playerGameObject != null)
-                {
-                    // Get the PlayerMovement component from the player GameObject
-                    PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
-
-                    if (playerMovement != null)
-                    {
-                        if (!speedBoost)
-                        {
-                            // Modify the private field values
-                            //Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(17.5f);
-                            Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(50f);
-                            Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(35f);
-
-                            speedBoost = true;
-                        }
-                        else
-                        {
-                            // Modify the private field values
-                            Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(13f);
-                            Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(6.5f);
-
-                            speedBoost = false;
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogError("PlayerMovement component not found on the Player GameObject.");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Player GameObject not found.");
-                }
-            }
+            speedBoost = GUI.Toggle(new Rect(120, 130, 140, 20), noclip, "SpeedBoost");
             // Jetpack
-            jetPack = GUI.Toggle(new Rect(120, 160, 140, 20), jetPack, "Jetpack");
+            jetPack = GUI.Toggle(new Rect(120, 150, 140, 20), jetPack, "Jetpack");
         }
 
         void DisplayStatsMods()
@@ -1018,6 +973,71 @@ namespace DiaMuckMods.menu
                     {
                         Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
                     }
+                }
+            }
+
+            if (speedBoost)
+            {
+                if (!finishedSpeedboost)
+                {
+                    // Find the player GameObject by tag
+                    GameObject playerGameObject = GameObject.Find("Player");
+
+                    if (playerGameObject != null)
+                    {
+                        // Get the PlayerMovement component from the player GameObject
+                        PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                        if (playerMovement != null)
+                        {
+                            Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(50f);
+                            Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(35f);
+
+                            finishedSpeedboost = true;
+                        }
+                        else
+                        {
+                            Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+
+                            speedBoost = false;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Player GameObject not found.");
+
+                        speedBoost = false;
+                    }
+                }
+            }
+            else
+            {
+                if (finishedSpeedboost)
+                {
+                    // Find the player GameObject by tag
+                    GameObject playerGameObject = GameObject.Find("Player");
+
+                    if (playerGameObject != null)
+                    {
+                        // Get the PlayerMovement component from the player GameObject
+                        PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                        if (playerMovement != null)
+                        {
+                            Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(13f);
+                            Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(6.5f);
+                        }
+                        else
+                        {
+                            Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Player GameObject not found.");
+                    }
+
+                    finishedSpeedboost = false;
                 }
             }
 
