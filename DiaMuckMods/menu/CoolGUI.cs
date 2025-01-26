@@ -19,7 +19,7 @@ namespace DiaMuckMods.menu
     public class CoolGUI:MonoBehaviour
     {
         // GUI Crap
-        private Rect windowRect = new Rect(20, 20, 600, 500); // Initial position and size of the window
+        private Rect windowRect = new Rect(20, 20, 600, 500);
         private bool isDragging = false;
         private Vector2 dragStartPos;
         //public ItemManager itemManager;
