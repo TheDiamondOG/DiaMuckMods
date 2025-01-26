@@ -42,6 +42,7 @@ namespace DiaMuckMods.menu
         private bool spamPlayers = false;
         private bool jetPack;
         private bool velocityFly;
+        private bool finishedImmortatilty;
         private string chatMessage = "";
 
         // Mod Options
@@ -526,6 +527,26 @@ namespace DiaMuckMods.menu
             {
                 GameObject.Find("=====DONTDESTROY=====/Lobby").GetComponent<SteamManager>().leaveLobby();
             }
+            if (GUI.Button(new Rect(270, 150, 140, 20), "Destroy Multipliers"))
+            {
+                GameLoop gameLoop = GameObject.Find("===NETWORK===").GetComponent<GameLoop>();
+                Type gameLoopType = typeof(GameLoop);
+                MethodInfo gameLoopMeth = gameLoopType.GetMethod("NewDay", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (gameLoopMeth != null)
+                {
+                    object[] parameters = { 999999999 };
+                    gameLoopMeth.Invoke(gameLoop, parameters);
+                }
+            }
+            if (GUI.Button(new Rect(270, 180, 140, 20), "Destroy All Respawns"))
+            {
+                ShrineRespawn[] shrineRespawns = FindObjectsOfType<ShrineRespawn>();
+
+                foreach (ShrineRespawn shrineRespawn in shrineRespawns)
+                {
+                    shrineRespawn.AllExecute();
+                }
+            }
         }
 
         void DisplayPlayerMods()
@@ -614,6 +635,10 @@ namespace DiaMuckMods.menu
             }
             if (GUI.Button(new Rect(120, 210, 140, 20), "KYS NOW"))
             {
+                PlayerStatus.Instance.Damage(-100);
+                PlayerStatus.Instance.Damage(-100);
+                PlayerStatus.Instance.Damage(-100);
+                PlayerStatus.Instance.Damage(-100);
                 PlayerStatus.Instance.Damage(-100);
                 PlayerManager playerManger = new PlayerManager();
 
@@ -826,6 +851,34 @@ namespace DiaMuckMods.menu
             }
         }
 
+        private void DisplayInfoMenu()
+        {
+            GameObject playerObject = GameObject.Find("Player");
+            if (playerObject == null)
+            {
+                GUI.TextArea(new Rect(120, 30, 300, 20), "Can't check info until you are in a lobby");
+            }
+            else
+            {
+                PlayerMovement playerMovement = gameObject.GetComponent<PlayerMovement>();
+                PlayerStatus playerStatus = gameObject.GetComponent<PlayerStatus>();
+                PlayerManager playerManager = gameObject.GetComponent<PlayerManager>();
+
+                Vector3 position = gameObject.transform.position;
+                Vector3 velocity = playerMovement.GetVelocity();
+
+                string text = string.Empty;
+
+                text += "Player Info\n-----------------------\n";
+                text += $"Position: {position.x}, {position.y}, {position.z}\n";
+                text += $"Velocity: {velocity.x}, {velocity.y}, {velocity.z}\n";
+                text += $"Fall Speed: {playerMovement.GetFallSpeed()}\n";
+                text += $"Player ID: {playerManager.id}\n";
+
+                GUI.TextArea(new Rect(120, 30, 475, 450), text);
+            }
+        }
+
         void DisplayDebugMods()
         {
             Filestuff filestuff = new Filestuff();
@@ -877,6 +930,8 @@ namespace DiaMuckMods.menu
             }
         }
 
+
+
         void Update()
         {
             // Keybinds
@@ -909,20 +964,60 @@ namespace DiaMuckMods.menu
             {
                 try
                 {
-                    if (PlayerStatus.Instance != null)
+                    GameObject playerObject = GameObject.Find("Player");
+                    if (playerObject != null)
                     {
-                        PlayerStatus.Instance.hp = 100;
+                        PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
+                        playerstatus.hp = 100f;
+
+                        Traverse.Create(playerstatus).Field("healing").SetValue(true);
+                        Traverse.Create(playerstatus).Field("healingRate").SetValue(100f);
+                        Traverse.Create(playerstatus).Field("invincible").SetValue(true);
+                        Traverse.Create(playerstatus).Field("protectionActive").SetValue(true);
+
+                        finishedImmortatilty = true;
                     }
                     else
                     {
-                        Debug.LogWarning("PlayerStatus instance not found. Immortality feature disabled.");
-                        immortal = false; // Disable immortality if PlayerStatus instance is missing
+                        Debug.LogWarning("Player object not found. Immortality feature disabled.");
+                        immortal = false;
                     }
                 }
                 catch (NullReferenceException ex)
                 {
                     Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
                     immortal = false;
+                }
+            }
+            else
+            {
+                if (finishedImmortatilty)
+                {
+                    try
+                    {
+                        GameObject playerObject = GameObject.Find("Player");
+                        if (playerObject != null)
+                        {
+                            PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
+                            playerstatus.hp = 100f;
+
+                            Traverse.Create(playerstatus).Field("healing").SetValue(false);
+                            Traverse.Create(playerstatus).Field("healingRate").SetValue(5f);
+                            Traverse.Create(playerstatus).Field("invincible").SetValue(false);
+                            Traverse.Create(playerstatus).Field("protectionActive").SetValue(false);
+
+                            finishedImmortatilty = false;
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Player object not found. Immortality feature disabled.");
+                            immortal = false;
+                        }
+                    }
+                    catch (NullReferenceException ex)
+                    {
+                        Debug.LogError("Error accessing PlayerStatus instance: " + ex.Message);
+                    }
                 }
             }
 
