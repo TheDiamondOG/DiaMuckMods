@@ -19,7 +19,7 @@ namespace DiaMuckMods.menu
     public class CoolGUI:MonoBehaviour
     {
         // GUI Crap
-        private Rect windowRect = new Rect(20, 20, 600, 500);
+        private Rect windowRect = new Rect(20, 20, 600, 500); // Initial position and size of the window
         private bool isDragging = false;
         private Vector2 dragStartPos;
         //public ItemManager itemManager;
@@ -820,11 +820,11 @@ namespace DiaMuckMods.menu
             }
             else
             {
-                PlayerMovement playerMovement = gameObject.GetComponent<PlayerMovement>();
-                PlayerStatus playerStatus = gameObject.GetComponent<PlayerStatus>();
-                PlayerManager playerManager = gameObject.GetComponent<PlayerManager>();
+                PlayerMovement playerMovement = playerObject.GetComponent<PlayerMovement>();
+                PlayerStatus playerStatus = playerObject.GetComponent<PlayerStatus>();
+                PlayerManager playerManager = playerObject.GetComponent<PlayerManager>();
 
-                Vector3 position = gameObject.transform.position;
+                Vector3 position = playerObject.transform.position;
                 Vector3 velocity = playerMovement.GetVelocity();
 
                 string text = string.Empty;
