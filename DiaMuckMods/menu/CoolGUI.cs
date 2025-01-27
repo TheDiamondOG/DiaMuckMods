@@ -19,7 +19,7 @@ namespace DiaMuckMods.menu
     public class CoolGUI:MonoBehaviour
     {
         // GUI Crap
-        private Rect windowRect = new Rect(20, 20, 600, 500); // Initial position and size of the window
+        private Rect windowRect = new Rect(20, 20, 600, 500);
         private bool isDragging = false;
         private Vector2 dragStartPos;
         //public ItemManager itemManager;
@@ -71,28 +71,23 @@ namespace DiaMuckMods.menu
         }
 
         public ModCategory currentCategory = ModCategory.Movement;
-        private Vector2 categoryScrollPos; // Scroll position for categories
-
+        private Vector2 categoryScrollPos;
         void OnGUI()
         {
             GUI.color = UnityEngine.Color.white;
             if (showGUI)
             {
-                // Draw the window
                 windowRect = GUI.Window(0, windowRect, WindowFunction, "Dia Mods");
             }
         }
 
         void WindowFunction(int windowID)
         {
-            // Make the window draggable only when clicking on the title bar
             Rect titleBarRect = new Rect(0, 0, windowRect.width, 20);
             GUI.DragWindow(titleBarRect);
 
-            // Check if the mouse is within the title bar area
             if (titleBarRect.Contains(Event.current.mousePosition))
             {
-                // Handle dragging
                 if (Event.current.type == EventType.MouseDown)
                 {
                     isDragging = true;
@@ -108,11 +103,9 @@ namespace DiaMuckMods.menu
 
             if (isDragging)
             {
-                // Update the window's position while dragging
                 windowRect.position = Event.current.mousePosition - dragStartPos;
             }
 
-            // Display category buttons with scrolling
             categoryScrollPos = GUILayout.BeginScrollView(categoryScrollPos, GUILayout.Width(100));
             GUILayout.BeginVertical();
             foreach (ModCategory category in Enum.GetValues(typeof(ModCategory)))
@@ -125,7 +118,6 @@ namespace DiaMuckMods.menu
             GUILayout.EndVertical();
             GUILayout.EndScrollView();
 
-            // Display mods based on the current category
             switch (currentCategory)
             {
                 case ModCategory.Movement:
