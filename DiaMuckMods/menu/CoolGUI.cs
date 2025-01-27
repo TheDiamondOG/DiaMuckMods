@@ -16,7 +16,7 @@ using DiaMuckMods.tools;
 
 namespace DiaMuckMods.menu
 {
-    public class CoolGUI:MonoBehaviour
+    public class CoolGUI : MonoBehaviour
     {
         // GUI Crap
         private Rect windowRect = new Rect(20, 20, 600, 500);
@@ -43,9 +43,11 @@ namespace DiaMuckMods.menu
         private bool jetPack;
         private bool velocityFly;
         private bool jumpBoost;
+        private bool swimBoost;
         private bool finishedImmortatilty;
         private bool finishedSpeedboost;
         private bool finishedJumpBoost;
+        private bool finishedSwimBoost;
         private string chatMessage = "";
 
         // Mod Options
@@ -164,10 +166,10 @@ namespace DiaMuckMods.menu
 
             // Fly
             fly = GUI.Toggle(new Rect(120, 70, 140, 20), fly, "Fly");
-            
+
             // Velocity Fly
             velocityFly = GUI.Toggle(new Rect(120, 90, 140, 20), velocityFly, "Velocity Fly");
-            
+
             // Noclip
             noclip = GUI.Toggle(new Rect(120, 110, 140, 20), noclip, "Noclip");
 
@@ -177,6 +179,8 @@ namespace DiaMuckMods.menu
             jetPack = GUI.Toggle(new Rect(120, 150, 140, 20), jetPack, "Jetpack");
 
             jumpBoost = GUI.Toggle(new Rect(120, 170, 140, 20), jumpBoost, "Jump Boost");
+
+            swimBoost = GUI.Toggle(new Rect(120, 190, 140, 20), swimBoost, "Swim Boost");
         }
 
         void DisplayStatsMods()
@@ -270,7 +274,7 @@ namespace DiaMuckMods.menu
 
                 Transform playerTransform = GameObject.Find("Player").transform;
 
-                Vector3 spawnPostion = new Vector3(playerTransform.position.x+2f, playerTransform.position.y, playerTransform.position.z);
+                Vector3 spawnPostion = new Vector3(playerTransform.position.x + 2f, playerTransform.position.y, playerTransform.position.z);
 
                 foreach (HitableRock pickup in pickupInteract)
                 {
@@ -609,7 +613,7 @@ namespace DiaMuckMods.menu
             {
                 Transform playerTransform = playerObject.transform;
 
-                Vector3 spawnPostion = new Vector3(playerTransform.position.x+3f, playerTransform.position.y, playerTransform.position.z);
+                Vector3 spawnPostion = new Vector3(playerTransform.position.x + 3f, playerTransform.position.y, playerTransform.position.z);
 
                 // Button Spawners
                 if (GUI.Button(new Rect(120, 30, 140, 20), "Spawn Bob"))
@@ -844,7 +848,7 @@ namespace DiaMuckMods.menu
                 // Find the correct MobType by name
                 foreach (MobType mober in MobSpawner.Instance.allMobs)
                 {
-                    text += "\nName: " + mober.name + "\nID: " + mober.id+"\nKnockback: "+mober.knockbackThreshold+ "\n-------------------";
+                    text += "\nName: " + mober.name + "\nID: " + mober.id + "\nKnockback: " + mober.knockbackThreshold + "\n-------------------";
                 }
                 filestuff.WriteToFile("mob_info.txt", text);
             }
@@ -860,7 +864,7 @@ namespace DiaMuckMods.menu
                 {
                     InventoryItem itifno = kvp.Value;
 
-                    text += "\nName: "+ itifno.name+ "\nRarity: " + itifno.rarity+"\nID: "+ itifno.id + "\n-------------------";
+                    text += "\nName: " + itifno.name + "\nRarity: " + itifno.rarity + "\nID: " + itifno.id + "\n-------------------";
                 }
                 filestuff.WriteToFile("item_info.txt", text);
             }
@@ -876,7 +880,7 @@ namespace DiaMuckMods.menu
                 {
                     Powerup itifno = kvp.Value;
 
-                    text += "\nName: "+ itifno.name+"\nDescription: "+ itifno.description+"\nID: "+itifno.id + "\n-------------------";
+                    text += "\nName: " + itifno.name + "\nDescription: " + itifno.description + "\nID: " + itifno.id + "\n-------------------";
                 }
                 filestuff.WriteToFile("powerup_info.txt", text);
             }
@@ -1095,6 +1099,66 @@ namespace DiaMuckMods.menu
                 }
             }
 
+            if (swimBoost)
+            {
+                // Find the player GameObject by tag
+                GameObject playerGameObject = GameObject.Find("Player");
+
+                if (playerGameObject != null)
+                {
+                    // Get the PlayerMovement component from the player GameObject
+                    PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                    if (playerMovement != null)
+                    {
+                        Traverse.Create(playerMovement).Field("swimSpeed").SetValue(200f);
+
+                        finishedSwimBoost = true;
+                    }
+                    else
+                    {
+                        Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+
+                        swimBoost = false;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Player GameObject not found.");
+
+                    swimBoost = false;
+                }
+            }
+            else
+            {
+                if (finishedSwimBoost)
+                {
+                    // Find the player GameObject by tag
+                    GameObject playerGameObject = GameObject.Find("Player");
+
+                    if (playerGameObject != null)
+                    {
+                        // Get the PlayerMovement component from the player GameObject
+                        PlayerMovement playerMovement = playerGameObject.GetComponent<PlayerMovement>();
+
+                        if (playerMovement != null)
+                        {
+                            Traverse.Create(playerMovement).Field("swimSpeed").SetValue(50f);
+                        }
+                        else
+                        {
+                            Debug.LogError("PlayerMovement component not found on the Player GameObject.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Player GameObject not found.");
+                    }
+
+                    finishedSwimBoost = false;
+                }
+            }
+
             // Noclip
             if (noclip)
             {
@@ -1255,7 +1319,7 @@ namespace DiaMuckMods.menu
                     fly = false; // Disable fly if an error occurs
                 }
             }
-            
+
             // Velocity Fly
             if (velocityFly)
             {
@@ -1404,7 +1468,7 @@ namespace DiaMuckMods.menu
                     velocityFly = false;
                 }
             }
-            
+
             if (moonGravity)
             {
                 try
