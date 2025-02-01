@@ -897,15 +897,15 @@ namespace DiaMuckMods.menu
             }
             if (Input.GetKeyDown(KeyCode.F2))
             {
-                if (!Cursor.visible) // If cursor is currently invisible
+                if (!Cursor.visible)
                 {
-                    Cursor.visible = true; // Make cursor visible
-                    Cursor.lockState = CursorLockMode.None; // Unlock cursor
+                    Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None; 
                 }
-                else // If cursor is currently visible
+                else
                 {
-                    Cursor.visible = false; // Hide cursor
-                    Cursor.lockState = CursorLockMode.Locked; // Lock cursor
+                    Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Locked;
                 }
             }
             if (Input.GetKeyDown(KeyCode.F))
