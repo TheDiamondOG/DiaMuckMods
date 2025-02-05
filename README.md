@@ -62,7 +62,8 @@ This is a muck mod menu with random tools to do what ever you want.
 - MOD NAME WOULD GET ME BANNED FROM GITHUB
 ## Spawn
 A menu to spawn any mob in the game
-- Kill All (CS)
+- Destroy All (CS)
+- Kill All (SS)
 ## Teleport
 - Teleport to boat
 - Teleport to Ore
