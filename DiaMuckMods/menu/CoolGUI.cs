@@ -591,11 +591,7 @@ namespace DiaMuckMods.menu
             }
             if (GUI.Button(new Rect(120, 210, 140, 20), "KYS NOW"))
             {
-                PlayerStatus.Instance.Damage(-100);
-                PlayerStatus.Instance.Damage(-100);
-                PlayerStatus.Instance.Damage(-100);
-                PlayerStatus.Instance.Damage(-100);
-                PlayerStatus.Instance.Damage(-100);
+                PlayerStatus.Instance.Damage(0, 0, true);
                 PlayerManager playerManger = new PlayerManager();
 
                 playerManger.dead = true;
@@ -683,7 +679,7 @@ namespace DiaMuckMods.menu
                 {
                     Mods.SpawnMob("Chief", spawnPostion);
                 }
-                if (GUI.Button(new Rect(270, 120, 120, 20), "Kill All (CS)"))
+                if (GUI.Button(new Rect(270, 120, 120, 20), "Destroy All (CS)"))
                 {
                     Mob[] mobs = FindObjectsOfType<Mob>();
 
@@ -696,20 +692,21 @@ namespace DiaMuckMods.menu
                         Destroy(mobGameObject);
                     }
                 }
-                if (GUI.Button(new Rect(270, 150, 140, 20), "Kill All (Borked) (SS)"))
+                if (GUI.Button(new Rect(270, 150, 140, 20), "Kill All (SS)"))
                 {
                     //for (int i = 0; i < MobManager.Instance.GetNextId(); i++)
                     //{
                     //MobManager.Instance.RemoveMob(i);
                     //}
 
-                    Mob[] mobs = FindObjectsOfType<Mob>();
+                    HitableMob[] mobsHitable = FindObjectsOfType<HitableMob>();
 
-                    Vector3 newKillSpot = new Vector3(99999999f, 99999999f, 99999999f);
+                    Vector3 newKillSpot = new Vector3(0, 0, 0);
 
-                    foreach (Mob mob in mobs)
+                    foreach (HitableMob mob in mobsHitable)
                     {
-                        mob.SetPosition(newKillSpot);
+                        mob.OnKill(newKillSpot);
+                        mob.KillObject(newKillSpot);
                     }
                 }
             }
