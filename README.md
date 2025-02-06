@@ -59,7 +59,7 @@ This is a muck mod menu with random tools to do what ever you want.
 - Get All Gems
 - Everything OP
 - Everything OP Lower Speed
-- MOD NAME WOULD GET ME BANNED FROM GITHUB
+- KYS NOW
 ## Spawn
 A menu to spawn any mob in the game
 - Destroy All (CS)
