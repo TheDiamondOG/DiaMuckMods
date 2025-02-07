@@ -242,6 +242,6 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="cp /home/xander/RiderProjects/DiaMuckMods/DiaMuckMods/bin/Debug/netstandard2.0/DiaMuckMods.dll /home/xander/.local/share/Steam/steamapps/common/Muck/BepInEx/plugins/" />
+    <Exec Command="cp /home/dia/RiderProjects/DiaMuckMods/DiaMuckMods/bin/Debug/netstandard2.0/DiaMuckMods.dll /home/dia/.local/share/Steam/steamapps/common/Muck/BepInEx/plugins/" />
   </Target>
 </Project>

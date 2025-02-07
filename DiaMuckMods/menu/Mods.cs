@@ -47,12 +47,10 @@ namespace DiaMuckMods.menu
                 position = new Vector3(playerTransform.position.x, playerTransform.position.y + 5f, playerTransform.position.z);
             }
 
-            // Use ScriptableObject.CreateInstance to create a MobType instance
             MobType mobType = ScriptableObject.CreateInstance<MobType>();
 
             int mobID = 0;
-
-            // Find the correct MobType by name
+            
             foreach (MobType mober in MobSpawner.Instance.allMobs)
             {
                 if (mober.name.ToLower() == mobName.ToLower())
@@ -69,7 +67,6 @@ namespace DiaMuckMods.menu
             // Log the intended spawn position
             Debug.Log($"Attempting to spawn mob at position: {mobSpawnSection}");
 
-            // Check if the position is close enough to the NavMesh
             if (!NavMesh.SamplePosition(mobSpawnSection, out NavMeshHit hit, 1f, NavMesh.AllAreas))
             {
                 Debug.LogWarning("Spawn position is not close enough to the NavMesh. Adjusting position.");
@@ -78,7 +75,22 @@ namespace DiaMuckMods.menu
             }
 
             // Spawn the mob
-            MobSpawner.Instance.ServerSpawnNewMob(MobManager.Instance.GetNextId(), mobID, position, multiplyer, multiplyer*1.5f, (BossType)0, -1);
+            int mobIdCool = MobManager.Instance.GetNextId();
+            /*
+            MobManager mobManager = GameObject.Find("===Managers===/MobManager").GetComponent<MobManager>();
+            
+            Mob newMob = new Mob();
+            
+            newMob.id = mobIdCool;
+            newMob.SetPosition(position);
+            newMob.multiplier = multiplyer;
+            newMob.bossMultiplier = multiplyer*1.5f;
+            newMob.mobType = mobType;
+            newMob.bossType = BossType.None;
+            
+            mobManager.AddMob(newMob, mobIdCool);
+            */
+            MobSpawner.Instance.ServerSpawnNewMob(mobIdCool, mobID, position, multiplyer, multiplyer*1.5f, BossType.None, -1);
         }
         public static void SpawnGuardianMob(int guardianType, Vector3 position, float multiplyer = 1f)
         {

@@ -22,6 +22,10 @@ namespace DiaMuckMods.menu
         private Rect windowRect = new Rect(20, 20, 600, 500);
         private bool isDragging = false;
         private Vector2 dragStartPos;
+
+        public static string menuTitle = "Dia Mods";
+        
+        public string menuTitleString = menuTitle;
         //public ItemManager itemManager;
 
         // All the mods
@@ -44,6 +48,7 @@ namespace DiaMuckMods.menu
         private bool velocityFly;
         private bool jumpBoost;
         private bool swimBoost;
+        
         private bool finishedImmortatilty;
         private bool finishedSpeedboost;
         private bool finishedJumpBoost;
@@ -69,6 +74,7 @@ namespace DiaMuckMods.menu
             Spawn,
             Teleport,
             Info,
+            Random,
             Debug,
         }
 
@@ -79,7 +85,7 @@ namespace DiaMuckMods.menu
             GUI.color = UnityEngine.Color.white;
             if (showGUI)
             {
-                windowRect = GUI.Window(0, windowRect, WindowFunction, "Dia Mods");
+                windowRect = GUI.Window(0, windowRect, WindowFunction, menuTitleString);
             }
         }
 
@@ -148,6 +154,9 @@ namespace DiaMuckMods.menu
                     break;
                 case ModCategory.Info:
                     DisplayInfoMenu();
+                    break;
+                case ModCategory.Random:
+                    DisplayRandomMods();
                     break;
                 case ModCategory.Debug:
                     DisplayDebugMods();
@@ -831,6 +840,11 @@ namespace DiaMuckMods.menu
                 GUI.TextArea(new Rect(120, 30, 475, 450), text);
             }
         }
+        
+        void DisplayRandomMods()
+        {
+            
+        }
 
         void DisplayDebugMods()
         {
@@ -887,6 +901,9 @@ namespace DiaMuckMods.menu
 
         void Update()
         {
+            // FPS Counter
+            menuTitleString = menuTitle+" - FPS: "+Mathf.Ceil(1f / Time.unscaledDeltaTime).ToString();
+            
             // Keybinds
             if (Input.GetKeyDown(KeyCode.F1))
             {
