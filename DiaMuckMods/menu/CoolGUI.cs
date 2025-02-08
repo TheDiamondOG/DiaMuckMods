@@ -68,7 +68,7 @@ namespace DiaMuckMods.menu
         public float flySpeed = 40f;
         private int lastPlayerId = 0;
         private Vector3 flyVelocity = Vector3.zero;
-        private float flyVelocityMax = 100f;
+        private float flyVelocityMax = 50f;
         private float flyVelocitySpeed = 2.5f;
 
         // Define categories
@@ -1017,6 +1017,16 @@ namespace DiaMuckMods.menu
                     GameObject playerObject = GameObject.Find("Player");
                     if (playerObject != null)
                     {
+                        DamageVignette[] damageThing = FindObjectsOfType<DamageVignette>();
+
+                        foreach (DamageVignette damageVignette in damageThing)
+                        {
+                            if (damageVignette.gameObject.activeSelf)
+                            {
+                                damageVignette.gameObject.SetActive(false);
+                            }
+                        }
+                        
                         PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
                         playerstatus.hp = 1000000000f;
                         playerstatus.maxHp = 1000000000;
@@ -1052,6 +1062,15 @@ namespace DiaMuckMods.menu
                         GameObject playerObject = GameObject.Find("Player");
                         if (playerObject != null)
                         {
+                            DamageVignette[] damageThing = FindObjectsOfType<DamageVignette>();
+
+                            foreach (DamageVignette damageVignette in damageThing)
+                            {
+                                if (!damageVignette.gameObject.activeSelf)
+                                {
+                                    damageVignette.gameObject.SetActive(true);
+                                }
+                            }
                             PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
                             playerstatus.hp = 100f;
                             playerstatus.maxHp = 100;
@@ -1154,7 +1173,7 @@ namespace DiaMuckMods.menu
 
                     if (playerMovement != null)
                     {
-                        Traverse.Create(playerMovement).Field("jumpForce").SetValue(30f);
+                        Traverse.Create(playerMovement).Field("jumpForce").SetValue(35f);
 
                         finishedJumpBoost = true;
                     }
