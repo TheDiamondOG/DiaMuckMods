@@ -1091,8 +1091,9 @@ namespace DiaMuckMods.menu
 
                     if (playerMovement != null)
                     {
-                        Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(50f);
-                        Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(35f);
+                        Traverse.Create(playerMovement).Field("maxRunSpeed").SetValue(90f);
+                        Traverse.Create(playerMovement).Field("maxWalkSpeed").SetValue(75f);
+                        Traverse.Create(playerMovement).Field("maxSpeed").SetValue(75f);
 
                         finishedSpeedboost = true;
                     }
