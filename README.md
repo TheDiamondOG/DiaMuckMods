@@ -15,6 +15,7 @@ This is a muck mod menu with random tools to do what ever you want.
 - Noclip
 - Speedboost
 - Jump Boost
+- Swim Boost
 ## Stats
 - Immortality
 - Never Hungry
@@ -53,7 +54,7 @@ This is a muck mod menu with random tools to do what ever you want.
 - Destroy All Respawns
 - Destroy Multipliers
 ## Player
-- Revive (Singleplayer Only, you cant win if you use this)
+- Revive
 - Big Stacks
 - Best Load Out
 - Get All Gems
@@ -61,7 +62,7 @@ This is a muck mod menu with random tools to do what ever you want.
 - Everything OP Lower Speed
 - KYS NOW
 ## Spawn
-A menu to spawn any mob in the game
+A menu to spawn any mob in the game but only for single player
 - Destroy All (CS)
 - Kill All (SS)
 ## Teleport
@@ -71,6 +72,13 @@ A menu to spawn any mob in the game
 - Teleport to Mob
 - Teleport to Chest
 - Break Teleported To Chest
+## Random
+- Underpowered Mobs (Only effects you)
+- Underpowered Object (Only effects you)
+- Overpowered Mobs (Only effects you)
+- Overpowered Objects (Only effects you)
+- Force Game Crash
+- Ear Blaster (CS)
 ## Debug
 - Get Mob Info
 - Get Item Info
