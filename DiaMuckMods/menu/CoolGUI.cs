@@ -908,9 +908,21 @@ namespace DiaMuckMods.menu
             }
             if (GUI.Button(new Rect(120, 150, 140, 20), "Ear Blaster"))
             {
-                CurrentSettings currentSettings = FindObjectOfType<CurrentSettings>();
+                CurrentSettings[] currentSettings = FindObjectsOfType<CurrentSettings>();
 
-                currentSettings.volume = int.MaxValue;
+                foreach (CurrentSettings current in currentSettings)
+                {
+                    if (current.volume != int.MaxValue)
+                    {
+                        current.volume = int.MaxValue;
+                        current.UpdateVolume(int.MaxValue);
+                    }
+                    else
+                    {
+                        current.volume = 1;
+                        current.UpdateVolume(1);
+                    }
+                } 
             }
         }
 
