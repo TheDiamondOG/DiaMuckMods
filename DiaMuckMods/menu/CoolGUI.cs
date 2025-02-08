@@ -48,11 +48,20 @@ namespace DiaMuckMods.menu
         private bool velocityFly;
         private bool jumpBoost;
         private bool swimBoost;
+        private bool underPowerMobs;
+        private bool underPowerObjects;
+        private bool overPowerMobs;
+        private bool overPowerObjects;
+        private bool lobbyCamera;
+        private bool boatCamera;
+        
         
         private bool finishedImmortatilty;
         private bool finishedSpeedboost;
         private bool finishedJumpBoost;
         private bool finishedSwimBoost;
+        private bool finishedLobbyCamera;
+        private bool finishedBoatCamera;
         private string chatMessage = "";
 
         // Mod Options
@@ -393,7 +402,7 @@ namespace DiaMuckMods.menu
                     boat.MarkShip();
                 }
             }
-            if (GUI.Button(new Rect(120, 210, 140, 20), "Leave Island"))
+            if (GUI.Button(new Rect(120, 210, 140, 20), "Leave Island (CS)"))
             {
                 Boat[] boats = FindObjectsOfType<Boat>();
 
@@ -442,32 +451,46 @@ namespace DiaMuckMods.menu
             }
             if (GUI.Button(new Rect(120, 300, 140, 20), "Add Player (CS)"))
             {
+                GameManager gameManager = GameObject.Find("===NETWORK===").GetComponent<GameManager>();
+                
                 lastPlayerId++;
 
                 Vector3 addPlayerPostion = new Vector3(GameObject.Find("Player").transform.position.x, GameObject.Find("Player").transform.position.y, GameObject.Find("Player").transform.position.z);
 
                 UnityEngine.Color color = Mods.GetRandomColor();
-
-                GameManager.instance.SpawnPlayer(lastPlayerId, chatMessage, Mods.GetRandomColor(), addPlayerPostion, Mods.GetRandomNumber(0, 100));
+                
+                gameManager.SpawnPlayer(lastPlayerId, chatMessage, Mods.GetRandomColor(), addPlayerPostion, Mods.GetRandomNumber(0, 100));
             }
             spamPlayers = GUI.Toggle(new Rect(120, 360, 140, 20), spamPlayers, "Spam Players (CS)");
             if (GUI.Button(new Rect(120, 330, 140, 20), "Kill Others (CS)"))
             {
+                GameManager gameManager = GameObject.Find("===NETWORK===").GetComponent<GameManager>();
+                
                 PlayerManager[] players = FindObjectsOfType<PlayerManager>();
 
                 PlayerManager playerManagerSelf = new PlayerManager();
-
+                
+                Mob[] mobMob = GameObject.FindObjectsOfType<Mob>();
+                
                 foreach (PlayerManager playerManager in players)
                 {
                     if (playerManagerSelf.id != playerManager.id)
                     {
-                        GameManager.instance.KillPlayer(playerManager.id, playerManager.gameObject.transform.position);
-                        ServerSend.PlayerDied(playerManager.id, playerManager.gameObject.transform.position, playerManager.gameObject.transform.position, playerManager.id);
+                        foreach (Mob mob in mobMob)
+                        {
+                            mob.bossMultiplier = float.MaxValue;
+                            mob.multiplier = float.MaxValue;
+                            mob.attackCooldown = 0f;
+                            
+                            mob.Attack(playerManager.id, 0);
+                        }
                     }
                 }
             }
             if (GUI.Button(new Rect(270, 30, 140, 20), "Kick Others (Borked)"))
             {
+                GameManager gameManager = GameObject.Find("===NETWORK===").GetComponent<GameManager>();
+                
                 PlayerManager[] players = FindObjectsOfType<PlayerManager>();
 
                 PlayerManager playerManagerSelf = new PlayerManager();
@@ -476,7 +499,8 @@ namespace DiaMuckMods.menu
                 {
                     if (playerManagerSelf.id != playerManager.id)
                     {
-                        GameManager.instance.KickPlayer(playerManager.name);
+                        //gameManager.KickPlayer(playerManager.name);
+                        ServerSend.DisconnectPlayer(playerManager.id);
                     }
                 }
             }
@@ -701,7 +725,7 @@ namespace DiaMuckMods.menu
                         Destroy(mobGameObject);
                     }
                 }
-                if (GUI.Button(new Rect(270, 150, 140, 20), "Kill All (SS)"))
+                if (GUI.Button(new Rect(270, 150, 140, 20), "Kill All (CS)"))
                 {
                     //for (int i = 0; i < MobManager.Instance.GetNextId(); i++)
                     //{
@@ -710,12 +734,17 @@ namespace DiaMuckMods.menu
 
                     HitableMob[] mobsHitable = FindObjectsOfType<HitableMob>();
 
-                    Vector3 newKillSpot = new Vector3(0, 0, 0);
+                    //Vector3 newKillSpot = new Vector3(0, 0, 0);
+
+                    GameObject playerObjectCool = GameObject.Find("Player");
+                    
+                    //MobManager mobManager = GameObject.Find("===Managers===/MobManager").GetComponent<MobManager>();
 
                     foreach (HitableMob mob in mobsHitable)
                     {
-                        mob.OnKill(newKillSpot);
-                        mob.KillObject(newKillSpot);
+                        //mob.OnKill(newKillSpot);
+                        //mob.KillObject(newKillSpot);
+                        mob.Damage(999999999, playerObjectCool.GetComponent<PlayerManager>().id, 0, mob.gameObject.transform.position);
                     }
                 }
             }
@@ -843,7 +872,46 @@ namespace DiaMuckMods.menu
         
         void DisplayRandomMods()
         {
-            
+            underPowerMobs = GUI.Toggle(new Rect(120, 30, 140, 20), underPowerMobs, "Underpowered Mobs");
+            underPowerObjects = GUI.Toggle(new Rect(120, 50, 140, 20), underPowerObjects, "Underpowered Objects");
+            overPowerMobs = GUI.Toggle(new Rect(120, 70, 140, 20), overPowerMobs, "Overpowered Mobs");
+            overPowerObjects = GUI.Toggle(new Rect(120, 90, 140, 20), overPowerObjects, "Overpowered Objects");
+            //lobbyCamera = GUI.Toggle(new Rect(120, 110, 140, 20), lobbyCamera, "Lobby Camera");
+            //boatCamera = GUI.Toggle(new Rect(120, 130, 140, 20), boatCamera, "Boat Camera");
+            if (GUI.Button(new Rect(120, 120, 140, 20), "Force Game Crash"))
+            {
+                GameObject playerObject = GameObject.Find("Player");
+                
+                PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
+
+                neverHungry = false;
+                neverTired = false;
+                immortal = false;
+                finishedImmortatilty = false;
+                
+                playerstatus.hp = float.MaxValue;
+                playerstatus.maxHp = int.MaxValue;
+                
+                playerstatus.hunger = float.MaxValue; 
+                playerstatus.maxHunger = float.MaxValue;
+                
+                playerstatus.stamina = float.MaxValue;
+                playerstatus.maxStamina = float.MaxValue;
+                
+                playerstatus.shield = float.MaxValue;
+                playerstatus.maxShield = int.MaxValue;
+                
+                Traverse.Create(playerstatus).Field("healing").SetValue(true);
+                Traverse.Create(playerstatus).Field("healingRate").SetValue(float.MaxValue);
+                Traverse.Create(playerstatus).Field("invincible").SetValue(true);
+                Traverse.Create(playerstatus).Field("protectionActive").SetValue(true);
+            }
+            if (GUI.Button(new Rect(120, 150, 140, 20), "Ear Blaster"))
+            {
+                CurrentSettings currentSettings = FindObjectOfType<CurrentSettings>();
+
+                currentSettings.volume = int.MaxValue;
+            }
         }
 
         void DisplayDebugMods()
@@ -938,10 +1006,14 @@ namespace DiaMuckMods.menu
                     if (playerObject != null)
                     {
                         PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
-                        playerstatus.hp = 100f;
+                        playerstatus.hp = 1000000000f;
+                        playerstatus.maxHp = 1000000000;
+                        
+                        playerstatus.shield = 1000000000f;
+                        playerstatus.maxShield = 1000000000;
 
                         Traverse.Create(playerstatus).Field("healing").SetValue(true);
-                        Traverse.Create(playerstatus).Field("healingRate").SetValue(100f);
+                        Traverse.Create(playerstatus).Field("healingRate").SetValue(1000000000f);
                         Traverse.Create(playerstatus).Field("invincible").SetValue(true);
                         Traverse.Create(playerstatus).Field("protectionActive").SetValue(true);
 
@@ -970,7 +1042,11 @@ namespace DiaMuckMods.menu
                         {
                             PlayerStatus playerstatus = playerObject.GetComponent<PlayerStatus>();
                             playerstatus.hp = 100f;
+                            playerstatus.maxHp = 100;
 
+                            playerstatus.shield = 0f;
+                            playerstatus.maxShield = 0;
+                            
                             Traverse.Create(playerstatus).Field("healing").SetValue(false);
                             Traverse.Create(playerstatus).Field("healingRate").SetValue(5f);
                             Traverse.Create(playerstatus).Field("invincible").SetValue(false);
@@ -1304,7 +1380,7 @@ namespace DiaMuckMods.menu
                         if (!flySpeedBoost)
                         {
                             flySpeedBoost = true;
-                            flySpeed = 60f;
+                            flySpeed = 100f;
                         }
                         PlayerStatus.Instance.stamina = 100;
                         PlayerStatus.Instance.hunger = 100;
@@ -1314,7 +1390,7 @@ namespace DiaMuckMods.menu
                         if (flySpeedBoost)
                         {
                             flySpeedBoost = false;
-                            flySpeed = 40f;
+                            flySpeed = 80f;
                         }
                     }
 
@@ -1549,7 +1625,7 @@ namespace DiaMuckMods.menu
             {
                 try
                 {
-                    PlayerStatus.Instance.hunger = 100;
+                    PlayerStatus.Instance.hunger = 100f;
                 }
                 catch (NullReferenceException ex)
                 {
@@ -1562,7 +1638,7 @@ namespace DiaMuckMods.menu
             {
                 try
                 {
-                    PlayerStatus.Instance.stamina = 100;
+                    PlayerStatus.Instance.stamina = 100f;
                 }
                 catch (NullReferenceException ex)
                 {
@@ -1570,17 +1646,20 @@ namespace DiaMuckMods.menu
                     neverTired = false;
                 }
             }
+            
             if (spamPlayers)
             {
                 try
                 {
+                    GameManager gameManager = GameObject.Find("===NETWORK===").GetComponent<GameManager>();
+                    
                     lastPlayerId++;
 
                     Vector3 addPlayerPostion = new Vector3(GameObject.Find("Player").transform.position.x, GameObject.Find("Player").transform.position.y, GameObject.Find("Player").transform.position.z);
 
                     UnityEngine.Color color = Mods.GetRandomColor();
 
-                    GameManager.instance.SpawnPlayer(lastPlayerId, chatMessage, Mods.GetRandomColor(), addPlayerPostion, Mods.GetRandomNumber(0, 100));
+                    gameManager.SpawnPlayer(lastPlayerId, chatMessage, Mods.GetRandomColor(), addPlayerPostion, Mods.GetRandomNumber(0, 100));
                 }
                 catch (Exception ex)
                 {
@@ -1599,6 +1678,153 @@ namespace DiaMuckMods.menu
                 {
                     Debug.LogError("Error accessing Player Object : " + ex.Message);
                     jetPack = false;
+                }
+            }
+
+            if (underPowerMobs)
+            {
+                HitableMob[] mobsHit = GameObject.FindObjectsOfType<HitableMob>();
+                Mob[] mobMob = GameObject.FindObjectsOfType<Mob>();
+
+                foreach (HitableMob mob in mobsHit)
+                {
+                    mob.hp = 1;
+                    mob.maxHp = 1;
+                }
+                foreach (Mob mob in mobMob)
+                {
+                    mob.bossMultiplier = 0f;
+                    mob.multiplier = 0f;
+                    mob.attackCooldown = 9999999999999999f;
+                }
+            }
+
+            if (underPowerObjects)
+            {
+                HitableResource[] resources = GameObject.FindObjectsOfType<HitableResource>();
+                HitableTree[] trees = GameObject.FindObjectsOfType<HitableTree>();
+                HitableRock[] rocks = GameObject.FindObjectsOfType<HitableRock>();
+                HitableChest[] chests = GameObject.FindObjectsOfType<HitableChest>();
+                
+                foreach (HitableResource resource in resources)
+                {
+                    resource.minTier = 0;
+                    resource.hp = 1;
+                    resource.maxHp = 1;
+                }
+                foreach (HitableRock rock in rocks)
+                {
+                    rock.minTier = 0;
+                    rock.hp = 1;
+                    rock.maxHp = 1;
+                }
+                foreach (HitableChest chest in chests)
+                {
+                    chest.minTier = 0;
+                    chest.hp = 1;
+                    chest.maxHp = 1;
+                }
+            }
+
+            if (overPowerMobs)
+            {
+                HitableMob[] mobsHit = GameObject.FindObjectsOfType<HitableMob>();
+                Mob[] mobMob = GameObject.FindObjectsOfType<Mob>();
+
+                foreach (HitableMob mob in mobsHit)
+                {
+                    mob.hp = int.MaxValue;
+                    mob.maxHp = int.MaxValue;
+                }
+                foreach (Mob mob in mobMob)
+                {
+                    mob.bossMultiplier = float.MaxValue;
+                    mob.multiplier = float.MaxValue;
+                    mob.attackCooldown = 0f;
+                    
+                    mob.Attack(mob.targetPlayerId, 0);
+                }
+            }
+            if (overPowerObjects)
+            {
+                HitableResource[] resources = GameObject.FindObjectsOfType<HitableResource>();
+                HitableTree[] trees = GameObject.FindObjectsOfType<HitableTree>();
+                HitableRock[] rocks = GameObject.FindObjectsOfType<HitableRock>();
+                HitableChest[] chests = GameObject.FindObjectsOfType<HitableChest>();
+                
+                foreach (HitableResource resource in resources)
+                {
+                    resource.minTier = int.MaxValue;
+                    resource.hp = int.MaxValue;
+                    resource.maxHp = int.MaxValue;
+                }
+                foreach (HitableRock rock in rocks)
+                {
+                    rock.minTier = int.MaxValue;
+                    rock.hp = int.MaxValue;
+                    rock.maxHp = int.MaxValue;
+                }
+                foreach (HitableChest chest in chests)
+                {
+                    chest.minTier = int.MaxValue;
+                    chest.hp = int.MaxValue;
+                    chest.maxHp = int.MaxValue;
+                }
+            }
+
+            if (lobbyCamera)
+            {
+                if (!finishedLobbyCamera)
+                {
+                    GameObject lobbyCameraObject = GameObject.FindObjectOfType<CinematicCamera>().gameObject;
+
+                    lobbyCameraObject.SetActive(true);
+
+                    lobbyCameraObject.GetComponent<CinematicCamera>().speed = 0.1f;
+                        
+                    finishedLobbyCamera = true;
+                }
+            }
+            else
+            {
+                if (finishedLobbyCamera)
+                {
+                    GameObject lobbyCameraObject = GameObject.FindObjectOfType<CinematicCamera>().gameObject;
+
+                    lobbyCameraObject.SetActive(false);
+
+                    lobbyCameraObject.GetComponent<CinematicCamera>().speed = 0.1f;
+
+                    finishedLobbyCamera = false;
+                }
+            }
+            
+            if (boatCamera)
+            {
+                if (!finishedBoatCamera)
+                {
+                    BoatCamera[] boatCameras = FindObjectsOfType<BoatCamera>();
+
+                    foreach (BoatCamera boatCamera in boatCameras)
+                    {
+                        boatCamera.gameObject.SetActive(true);
+                        
+                        finishedBoatCamera = true;
+                    }
+                }
+            }
+            else
+            {
+                if (finishedBoatCamera)
+                {
+                    BoatCamera[] boatCameras = FindObjectsOfType<BoatCamera>();
+
+                    foreach (BoatCamera boatCamera in boatCameras)
+                    {
+                        boatCamera.gameObject.SetActive(false);
+                        
+                        finishedBoatCamera = false;
+                    }
                 }
             }
         }
