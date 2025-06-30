@@ -11,7 +11,7 @@ namespace DiaMuckMods.menu
 {
     internal class Mods : MonoBehaviour
     {
-        public static int MobIdsCool = 0;
+        public static int MobIdsCool = 0; 
         public static int objectId = 9999;
         private static float jetpackVolocity;
         private static float jetpackVolocityMax = 100f;
